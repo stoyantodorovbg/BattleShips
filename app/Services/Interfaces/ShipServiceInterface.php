@@ -2,10 +2,9 @@
 
 namespace App\Services\Interfaces;
 
-
 interface ShipServiceInterface
 {
-    public function addRandomShips(): array;
+    public function addShips(array $grid, array $shipData, string $gridKey): void;
 
-    public function checkForSailingShips(): bool;
+    public function checkForSailingShips(array $grid): bool;
 }

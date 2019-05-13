@@ -2,8 +2,7 @@
 
 namespace App\Services\Interfaces;
 
-
 interface ShotServiceInterface
 {
-    public function updateGrid($row, $col): bool;
+    public function shootCell($row, $col, string $gridKey): bool;
 }

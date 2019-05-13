@@ -8,7 +8,7 @@ class GameController extends Controller
 {
     public function battleShips()
     {
-        return view('games.index');
+        return view('games.battle-ships');
     }
 
     public function shot(ShotRequest $request)
