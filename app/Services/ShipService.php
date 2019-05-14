@@ -12,9 +12,9 @@ class ShipService implements ShipServiceInterface
      *
      * @param array $grid
      * @param array $shipData
-     * @param string $gridKey
+     * @param string $gameName
      */
-    public function addShips(array $grid, array $shipData, string $gridKey = 'grid_battle_ships'): void
+    public function addShips(array $grid, array $shipData, string $gameName = 'battle_ships'): void
     {
         foreach($shipData as $ship) {
             $grid = $this->addShip($grid, $ship);
@@ -22,7 +22,7 @@ class ShipService implements ShipServiceInterface
 
         $gridService = resolve(GridServiceInterface::class);
 
-        $gridService->updateGrid($grid, $gridKey);
+        $gridService->updateGrid($grid, $gameName);
     }
 
     /**

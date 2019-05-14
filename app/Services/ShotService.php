@@ -12,17 +12,66 @@ class ShotService implements ShotServiceInterface
      *
      * @param $row
      * @param $col
-     * @param string $gridKey
+     * @param string $gameName
      * @return bool
      */
-    public function shootCell($row, $col, string $gridKey = 'grid_battle_ships'): bool
+    public function shootCell($row, $col, string $gameName = 'battle_ships'): bool
     {
         $gridService = resolve(GridServiceInterface::class);
+        $gridSessionKey = $gridService->getShotsKey($gameName);
 
-        $grid = $gridService->getGrid($gridKey);
+        $grid = $gridService->getGrid($gridSessionKey);
 
-        $grid[$gridKey][$row][$col]['is_hit'] = true;
+        $grid[$gridSessionKey][$row][$col]['is_hit'] = true;
 
-        $gridService->updateGrid($grid, $gridKey);
+        $gridService->updateGrid($grid, $gridSessionKey);
+    }
+
+    /**
+     * Update the shot count in the session
+     *
+     * @param string $gameName
+     * @return int
+     */
+    public function countShots(string $gameName = 'battle_ships'): int
+    {
+        $shotSessionKey = $this->getShotsKey($gameName);
+
+        if(! session()->has($shotSessionKey)) {
+            session([$shotSessionKey => 1]);
+
+            return 1;
+        }
+
+        $shotsCount = session($shotSessionKey);
+        $shotsCount++;
+
+        session([$shotSessionKey => $shotsCount]);
+
+        return $shotsCount;
+    }
+
+    /**
+     * Get the shots count
+     *
+     * @param string $gameName
+     * @return int
+     */
+    public function getShotsCount(string $gameName = 'battle_ships'): int
+    {
+        $shotSessionKey = $this->getShotsKey($gameName);
+
+        return session($shotSessionKey);
+    }
+
+    /**
+     * Get the session key for the shots count
+     *
+     * @param string $gameName
+     * @return string
+     */
+    public function getShotsKey(string $gameName = 'battle_ships'): string
+    {
+        return $gameName . '_shots';
     }
 }

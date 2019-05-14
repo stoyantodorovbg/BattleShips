@@ -11,11 +11,12 @@ class GridService implements GridServiceInterface
      *
      * @param int $rows
      * @param int $cols
+     * @param string $gameName
      * @return array
      */
-    public function createGrid(int $rows = 10, int $cols = 10): array
+    public function createGrid(int $rows = 10, int $cols = 10, string $gameName = 'battle_ships'): array
     {
-        $gridData = $this->prepareGridData($rows, $cols);
+        $gridData = $this->prepareGridData($rows, $cols, $gameName);
 
         session($gridData);
 
@@ -25,26 +26,30 @@ class GridService implements GridServiceInterface
     /**
      * Get the grid from the session
      *
-     * @param string $gridKey
+     * @param string $gameName
      * @return array
      */
-    public function getGrid(string $gridKey = 'grid_battle_ships'): array
+    public function getGrid(string $gameName = 'battle_ships'): array
     {
-        return session($gridKey);
+        $gridSessionKey = $this->getGridKey($gameName);
+
+        return session($gridSessionKey);
     }
 
     /**
      * Update the grid stored into the session
      *
      * @param array $grid
-     * @param string $gridKey
+     * @param string $gameName
      * @return bool
      */
-    public function updateGrid(array $grid, string $gridKey = 'grid_battle_ships'): bool
+    public function updateGrid(array $grid, string $gameName = 'battle_ships'): bool
     {
-        $this->removeGrid($gridKey);
+        $gridSessionKey = $this->getGridKey($gameName);
 
-        session([$gridKey => $grid]);
+        $this->removeGrid($gridSessionKey);
+
+        session([$gridSessionKey => $grid]);
 
         return true;
     }
@@ -52,12 +57,14 @@ class GridService implements GridServiceInterface
     /**
      * Remove the grid from the session
      *
-     * @param string $gridKey
+     * @param string $gameName
      * @return bool
      */
-    public function removeGrid(string $gridKey = 'grid_battle_ships'): bool
+    public function removeGrid(string $gameName = 'battle_ships'): bool
     {
-        session()->forget($gridKey);
+        $gridSessionKey = $this->getGridKey($gameName);
+
+        session()->forget($gridSessionKey);
 
         return true;
     }
@@ -67,19 +74,22 @@ class GridService implements GridServiceInterface
      *
      * @param int $rows
      * @param int $cols
+     * @param string $gameName
      * @return array
      */
-    protected function prepareGridData(int $rows, int $cols): array
+    protected function prepareGridData(int $rows, int $cols, string $gameName): array
     {
+        $gridSessionKey = $this->getGridKey($gameName);
+
         $grid = [
-            'grid_battle_ships' => [],
+            $gridSessionKey => [],
         ];
 
         for ($row = 1; $row <= $rows; $row++) {
-            $grid['grid_battle_ships'][] = [];
+            $grid[$gridSessionKey][] = [];
 
             for ($col= 1; $col <= $cols; $col++) {
-                $grid['grid_battle_ships'][$row][] = [
+                $grid[$gridSessionKey][$row][] = [
                     'is_empty' => true,
                     'is_hit' => false,
                 ];
@@ -87,5 +97,16 @@ class GridService implements GridServiceInterface
         }
 
         return $grid;
+    }
+
+    /**
+     * Get the session key for the grid
+     *
+     * @param string $gameName
+     * @return string
+     */
+    public function getGridKey(string $gameName = 'battle_ships'): string
+    {
+        return $gameName . '_grid';
     }
 }
