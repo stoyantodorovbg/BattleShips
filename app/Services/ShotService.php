@@ -12,18 +12,19 @@ class ShotService implements ShotServiceInterface
      *
      * @param array $coords
      * @param string $gameName
-     * @return bool
+     * @return array
      */
     public function shootCell(array $coords, string $gameName = 'battle_ships'): array
     {
         $gridService = resolve(GridServiceInterface::class);
-        $gridSessionKey = $gridService->getShotsKey($gameName);
 
-        $grid = $gridService->getGrid($gridSessionKey);
+        $grid = $gridService->getGrid($gameName);
 
-        $grid[$gridSessionKey][$coords['row']][$coords['col']]['is_hit'] = true;
+        $grid[$coords['row']][$coords['col']]['is_hit'] = true;
 
-        $gridService->updateGrid($grid, $gridSessionKey);
+        $gridService->updateGrid($grid, $gameName);
+
+        $this->countShots();
 
         return $grid;
     }

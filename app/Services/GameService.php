@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
-class GameService
+use App\Services\Interfaces\GameServiceInterface;
+
+class GameService implements GameServiceInterface
 {
     /**
      * Perform the logic for the game finishing

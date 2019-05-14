@@ -35,18 +35,16 @@ class GameController extends Controller
      */
     public function shot(ShotRequest $request, ShotServiceInterface $shotService, ShipServiceInterface $shipService, GameServiceInterface $gameService)
     {
-        $grid = $shotService->shootCell($request->validated());
+        $response = [
+            'grid' => $shotService->shootCell($request->validated()),
+        ];
 
-        if (! $shipService->checkForSailingShips($grid)) {
+        if (! $shipService->checkForSailingShips($response['grid'])) {
             $shotCount = $gameService->finishGame();
 
-            return response([
-                'shot_count' => $shotCount,
-            ]);
+            $response['shot_count'] = $shotCount;
         }
 
-        return response([
-            'cell_coords' => $cell_coords,
-        ]);
+        return response($response);
     }
 }
