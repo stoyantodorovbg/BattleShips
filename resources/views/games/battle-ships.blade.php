@@ -1,5 +1,7 @@
+@extends('layouts.app')
+
 @section('content')
     <div class="container">
-        {{--TO DO Grid--}}
+        <battle-ships :grid="{{ $grid }}"></battle-ships>
     </div>
 @endsection

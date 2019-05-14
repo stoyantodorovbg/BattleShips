@@ -19,6 +19,7 @@ class GameController extends Controller
     public function battleShips(GridServiceInterface $gridService)
     {
         $grid = $gridService->createGrid();
+        $grid = collect($grid);
 
         return view('games.battle-ships', compact('grid'));
     }
