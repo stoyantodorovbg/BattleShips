@@ -10,21 +10,22 @@ class ShotService implements ShotServiceInterface
     /**
      * Mark a cell from the grid as hit
      *
-     * @param $row
-     * @param $col
+     * @param array $coords
      * @param string $gameName
      * @return bool
      */
-    public function shootCell($row, $col, string $gameName = 'battle_ships'): bool
+    public function shootCell(array $coords, string $gameName = 'battle_ships'): array
     {
         $gridService = resolve(GridServiceInterface::class);
         $gridSessionKey = $gridService->getShotsKey($gameName);
 
         $grid = $gridService->getGrid($gridSessionKey);
 
-        $grid[$gridSessionKey][$row][$col]['is_hit'] = true;
+        $grid[$gridSessionKey][$coords['row']][$coords['col']]['is_hit'] = true;
 
         $gridService->updateGrid($grid, $gridSessionKey);
+
+        return $grid;
     }
 
     /**

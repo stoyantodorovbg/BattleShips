@@ -4,7 +4,7 @@ namespace App\Services\Interfaces;
 
 interface ShotServiceInterface
 {
-    public function shootCell($row, $col, string $gameName): bool;
+    public function shootCell(array $cords, string $gameName): array;
 
     public function countShots(string $gameName): int;
 

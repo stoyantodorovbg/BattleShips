@@ -86,10 +86,8 @@ class GridService implements GridServiceInterface
         ];
 
         for ($row = 1; $row <= $rows; $row++) {
-            $grid[$gridSessionKey][] = [];
-
             for ($col= 1; $col <= $cols; $col++) {
-                $grid[$gridSessionKey][$row][] = [
+                $grid[$gridSessionKey][$row][$col] = [
                     'is_empty' => true,
                     'is_hit' => false,
                 ];
