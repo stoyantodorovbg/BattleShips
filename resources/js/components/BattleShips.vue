@@ -19,8 +19,8 @@
                  :key="index" class="cell"
             >
                 <span v-if="! cell.is_hit">.</span>
-                <span v-if="cell.is_hit && cell.is_empty" class="empty">-</span>
-                <span v-if="cell.is_hit && ! cell.is_empty">X</span>
+                <span v-if="cell.is_hit && cell.is_empty" class="hit-empty">-</span>
+                <span v-if="cell.is_hit && ! cell.is_empty" class="hit-ship">X</span>
             </div>
         </div>
 
@@ -70,12 +70,19 @@
                 justify-content: center;
 
                 span {
+                    color: blue;
                     padding-bottom: 16px;
                     font-size: 2rem;
                 }
 
-                .empty {
+                .hit-empty {
+                    color: blue;
                     padding-bottom: 4px;
+                }
+
+                .hit-ship {
+                    color: red;
+                    padding-bottom: 0;
                 }
             }
 

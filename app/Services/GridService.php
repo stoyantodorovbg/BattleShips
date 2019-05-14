@@ -3,22 +3,28 @@
 namespace App\Services;
 
 use App\Services\Interfaces\GridServiceInterface;
+use App\Services\Interfaces\ShipServiceInterface;
 
 class GridService implements GridServiceInterface
 {
     /**
      * Create an grid and store in into the session
      *
+     * @param array $shipData
      * @param int $rows
      * @param int $cols
      * @param string $gameName
      * @return array
      */
-    public function createGrid(int $rows = 10, int $cols = 10, string $gameName = 'battle_ships'): array
+    public function createGrid(array $shipData, int $rows = 10, int $cols = 10, string $gameName = 'battle_ships'): array
     {
         $gridData = $this->prepareGridData($rows, $cols, $gameName);
 
+        $shipService = resolve(ShipServiceInterface::class);
+
         session($gridData);
+
+        $shipService->addShips($gridData[$this->getGridKey($gameName)], $shipData);
 
         return $gridData;
     }

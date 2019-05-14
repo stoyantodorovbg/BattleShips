@@ -4,7 +4,7 @@ namespace App\Services\Interfaces;
 
 interface GridServiceInterface
 {
-    public function createGrid(int $rows, int $cols, string $gameName): array;
+    public function createGrid(array $shipData, int $rows, int $cols, string $gameName): array;
 
     public function getGrid(string $gameName): array;
 

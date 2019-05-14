@@ -56,7 +56,6 @@
                 let component = this;
                 axios.post('/shot', this.getData())
                     .then(response => {
-                        console.log(component.$parent.$data.gridData);
                         component.$parent.$data.gridData = response.data.grid
                     }).catch(function () {
                         console.log('Something went wrong.');

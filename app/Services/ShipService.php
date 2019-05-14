@@ -77,15 +77,15 @@ class ShipService implements ShipServiceInterface
     protected function getRandomCoords(array $grid, int $horizontalAlignment, int $shipLength): array
     {
         if($horizontalAlignment) {
-            $rowPositions = count($grid) - $shipLength;
-            $colPositions = count($grid[0]);
+            $rowPosition = count($grid) - $shipLength;
+            $colPosition = count($grid[1]);
         } else {
-            $rowPositions = count($grid[0]) - $shipLength;
-            $colPositions = count($grid);
+            $rowPosition = count($grid[1]);
+            $colPosition = count($grid) - $shipLength;
         }
 
-        $rowCoord = rand(1, $rowPositions);
-        $colCoord = rand(1, $colPositions);
+        $rowCoord = rand(1, $rowPosition);
+        $colCoord = rand(1, $colPosition);
 
 
         return [$rowCoord, $colCoord];
@@ -113,7 +113,7 @@ class ShipService implements ShipServiceInterface
         } else {
             $shipEnd = $coords[1] + $shipLength;
 
-            for($cell = $coords[0]; $cell < $shipEnd; $cell++) {
+            for($cell = $coords[1]; $cell < $shipEnd; $cell++) {
                 if(! $grid[$coords[1]][$cell]['is_empty']) {
                     return false;
                 }
