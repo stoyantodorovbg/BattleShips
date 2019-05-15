@@ -11,6 +11,6 @@
 |
 */
 
-Route::get('/', 'GameController@battleShips');
+Route::get('/', 'GameController@battleShips')->name('default-game');
 
-Route::post('/shot', 'GameController@shot');
+Route::post('/shot', 'GameController@shot')->name('shot');
