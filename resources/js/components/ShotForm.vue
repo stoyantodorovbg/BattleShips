@@ -43,7 +43,7 @@
                 WRONG INPUT!
             </div>
         </div>
-        <div  class="row font-weight-bolder success-message">
+        <div v-if="success"  class="row font-weight-bolder success-message">
             <div class="col-12 text-center">
                 Well done! You completed the game in {{ shotsCount }} shots
             </div>
