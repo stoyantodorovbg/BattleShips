@@ -43,6 +43,11 @@
                 WRONG INPUT!
             </div>
         </div>
+        <div  class="row font-weight-bolder success-message">
+            <div class="col-12 text-center">
+                Well done! You completed the game in {{ shotsCount }} shots
+            </div>
+        </div>
     </div>
 </template>
 
@@ -57,6 +62,8 @@
                 wrongInput: false,
                 rowsCount: this.getRowsCount(),
                 colsCount: this.getColsCount(),
+                shotsCount: 0,
+                success: false,
             };
         },
 
@@ -87,6 +94,11 @@
                     axios.post('/shot', data)
                         .then(response => {
                             component.$parent.$data.gridData = response.data.grid
+
+                            if(response.data.shot_count) {
+                                component.shotsCount = response.data.shot_count;
+                                component.success = true;
+                            }
                         }).catch(function () {
                         console.log('Something went wrong.');
                     });
@@ -144,6 +156,11 @@
     .shot-form {
         .wrong-input {
             color: red;
+        }
+
+        .success-message {
+            color: green;
+            font-size: 2em;
         }
     }
 </style>
