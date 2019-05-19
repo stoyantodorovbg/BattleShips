@@ -31,10 +31,10 @@
             <div class="col-12 input-group mb-3">
                 <button @click="submitShot()"
                         type="button"
-                        :disabled="wrongInput ? true : false"
+                        :disabled="disableSubmit ? true : false"
                         class="btn btn-primary w-100 font-weight-bolder"
                 >
-                    SHOT
+                    SHOOT
                 </button>
             </div>
         </div>
@@ -59,6 +59,7 @@
             return {
                 rowData: '',
                 colData: '',
+                disableSubmit: false,
                 wrongInput: false,
                 rowsCount: this.getRowsCount(),
                 colsCount: this.getColsCount(),
@@ -69,16 +70,20 @@
 
         watch: {
             rowData: function (value) {
+                this.disableSubmit = false;
                 this.wrongInput = false;
 
                 if(! this.checkRowData(value)) {
+                    this.disableSubmit = true;
                     this.wrongInput = true;
                 }
             },
             colData: function (value) {
+                this.disableSubmit = false;
                 this.wrongInput = false;
 
                 if(! this.checkColData(value)) {
+                    this.disableSubmit = true;
                     this.wrongInput = true;
                 }
             }
@@ -93,16 +98,18 @@
 
                     axios.post('/shot', data)
                         .then(response => {
-                            component.$parent.$data.gridData = response.data.grid
+                            component.$parent.$data.gridData = response.data.grid;
 
                             if(response.data.shot_count) {
                                 component.shotsCount = response.data.shot_count;
                                 component.success = true;
+                                component.disableSubmit = true;
                             }
                         }).catch(function () {
                         console.log('Something went wrong.');
                     });
                 } else {
+                    this.disableSubmit = true;
                     this.wrongInput = true;
                 }
             },
