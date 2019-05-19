@@ -1911,23 +1911,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'shot-form',
   data: function data() {
     return {
+      coordData: '',
       rowData: '',
       colData: '',
-      wrongInput: false,
+      gameFinish: false,
+      disableSubmit: this.gameFinish,
+      wrongInput: '',
       rowsCount: this.getRowsCount(),
       colsCount: this.getColsCount(),
       shotsCount: 0,
@@ -1935,39 +1928,50 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
-    rowData: function rowData(value) {
-      this.wrongInput = false;
+    coordData: function coordData(value) {
+      this.disableSubmit = false;
+      this.wrongInput = '';
+      this.rowData = value[0];
 
-      if (!this.checkRowData(value)) {
-        this.wrongInput = true;
+      if (value.hasOwnProperty(1)) {
+        this.colData = value[1];
+      } else {
+        this.wrongInput = 'Please enter a col!';
       }
-    },
-    colData: function colData(value) {
-      this.wrongInput = false;
 
-      if (!this.checkColData(value)) {
-        this.wrongInput = true;
+      if (value.hasOwnProperty(2)) {
+        this.colData += value[2];
+      }
+
+      if (!this.checkRowData(this.rowData)) {
+        this.disableSubmit = true;
+        this.wrongInput = 'wrong input!';
+      }
+
+      if (!this.checkColData(this.colData)) {
+        this.disableSubmit = true;
+        this.wrongInput = 'wrong input!';
       }
     }
   },
   methods: {
     submitShot: function submitShot() {
-      var data = this.getData();
+      var dataCell = this.getData();
 
-      if (data.row && data.col) {
+      if (dataCell.row && dataCell.col) {
         var component = this;
-        axios.post('/shot', data).then(function (response) {
-          component.$parent.$data.gridData = response.data.grid;
-
-          if (response.data.shot_count) {
-            component.shotsCount = response.data.shot_count;
-            component.success = true;
+        axios.post('/shot', dataCell).then(function (response) {
+          if (response.data.already_hit_cell) {
+            component.wrongInput = 'This cell has already been hit.';
+          } else {
+            component.updateGridData(response, dataCell);
           }
         })["catch"](function () {
           console.log('Something went wrong.');
         });
       } else {
-        this.wrongInput = true;
+        this.disableSubmit = true;
+        this.wrongInput = 'wrong input!';
       }
     },
     getData: function getData() {
@@ -2005,6 +2009,20 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       return false;
+    },
+    updateGridData: function updateGridData(response, dataCell) {
+      this.$parent.$data.gridData[dataCell.row][dataCell.col]['is_hit'] = true;
+
+      if (response.data.empty_cell) {
+        this.$parent.$data.gridData[dataCell.row][dataCell.col]['is_empty'] = true;
+      } else {
+        this.$parent.$data.gridData[dataCell.row][dataCell.col]['is_empty'] = false;
+      }
+
+      if (response.data.shot_count) {
+        this.gameFinish = true, this.shotsCount = response.data.shot_count;
+        this.success = true;
+      }
     }
   }
 });
@@ -38132,7 +38150,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container shot-form" }, [
     _c("div", { staticClass: "row mt-5" }, [
-      _c("div", { staticClass: "col-6 input-group mb-3" }, [
+      _c("div", { staticClass: "col-12 input-group mb-3" }, [
         _vm._m(0),
         _vm._v(" "),
         _c("input", {
@@ -38140,53 +38158,24 @@ var render = function() {
             {
               name: "model",
               rawName: "v-model",
-              value: _vm.rowData,
-              expression: "rowData"
+              value: _vm.coordData,
+              expression: "coordData"
             }
           ],
-          staticClass: "form-control",
+          staticClass: "form-control text-center",
           attrs: {
             type: "text",
-            maxlength: "1",
-            placeholder: "Enter a Character"
+            disabled: _vm.gameFinish ? true : false,
+            maxlength: "3",
+            placeholder: "Enter cell coordinates"
           },
-          domProps: { value: _vm.rowData },
+          domProps: { value: _vm.coordData },
           on: {
             input: function($event) {
               if ($event.target.composing) {
                 return
               }
-              _vm.rowData = $event.target.value
-            }
-          }
-        })
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-6 input-group mb-3" }, [
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.colData,
-              expression: "colData"
-            }
-          ],
-          staticClass: "form-control",
-          attrs: {
-            type: "number",
-            maxlength: "1",
-            min: "1",
-            max: _vm.getColsCount(),
-            placeholder: "Enter a Number"
-          },
-          domProps: { value: _vm.colData },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.colData = $event.target.value
+              _vm.coordData = $event.target.value
             }
           }
         }),
@@ -38201,24 +38190,31 @@ var render = function() {
           "button",
           {
             staticClass: "btn btn-primary w-100 font-weight-bolder",
-            attrs: { type: "button", disabled: _vm.wrongInput ? true : false },
+            attrs: {
+              type: "button",
+              disabled: _vm.disableSubmit ? true : false
+            },
             on: {
               click: function($event) {
                 return _vm.submitShot()
               }
             }
           },
-          [_vm._v("\n                SHOT\n            ")]
+          [_vm._v("\n                SHOOT\n            ")]
         )
       ])
     ]),
     _vm._v(" "),
     _vm.wrongInput
-      ? _c("div", { staticClass: "row font-weight-bolder wrong-input" }, [
-          _c("div", { staticClass: "col-12 text-center" }, [
-            _vm._v("\n            WRONG INPUT!\n        ")
-          ])
-        ])
+      ? _c(
+          "div",
+          { staticClass: "row font-weight-bolder wrong-input text-uppercase" },
+          [
+            _c("div", { staticClass: "col-12 text-center" }, [
+              _vm._v("\n            " + _vm._s(_vm.wrongInput) + "\n        ")
+            ])
+          ]
+        )
       : _vm._e(),
     _vm._v(" "),
     _vm.success
