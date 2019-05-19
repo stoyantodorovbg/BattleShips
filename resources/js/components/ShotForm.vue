@@ -38,9 +38,9 @@
                 </button>
             </div>
         </div>
-        <div v-if="wrongInput" class="row font-weight-bolder wrong-input">
+        <div v-if="wrongInput" class="row font-weight-bolder wrong-input text-uppercase">
             <div class="col-12 text-center">
-                WRONG INPUT!
+                {{ wrongInput }}
             </div>
         </div>
         <div v-if="success"  class="row font-weight-bolder success-message">
@@ -60,7 +60,7 @@
                 rowData: '',
                 colData: '',
                 disableSubmit: false,
-                wrongInput: false,
+                wrongInput: '',
                 rowsCount: this.getRowsCount(),
                 colsCount: this.getColsCount(),
                 shotsCount: 0,
@@ -71,40 +71,34 @@
         watch: {
             rowData: function (value) {
                 this.disableSubmit = false;
-                this.wrongInput = false;
+                this.wrongInput = '';
 
                 if(! this.checkRowData(value)) {
                     this.disableSubmit = true;
-                    this.wrongInput = true;
+                    this.wrongInput = 'wrong input!';
                 }
             },
             colData: function (value) {
                 this.disableSubmit = false;
-                this.wrongInput = false;
+                this.wrongInput = '';
 
                 if(! this.checkColData(value)) {
                     this.disableSubmit = true;
-                    this.wrongInput = true;
+                    this.wrongInput = 'wrong input!';
                 }
             }
         },
 
         methods: {
             submitShot() {
-                let data = this.getData();
+                let dataCell = this.getData();
 
-                if(data.row && data.col) {
+                if(dataCell.row && dataCell.col) {
                     let component = this;
 
-                    axios.post('/shot', data)
+                    axios.post('/shot', dataCell)
                         .then(response => {
-                            component.$parent.$data.gridData = response.data.grid;
-
-                            if(response.data.shot_count) {
-                                component.shotsCount = response.data.shot_count;
-                                component.success = true;
-                                component.disableSubmit = true;
-                            }
+                            component.processResponseData(response, dataCell);
                         }).catch(function () {
                         console.log('Something went wrong.');
                     });
@@ -155,6 +149,27 @@
 
                 return false;
             },
+
+            processResponseData(response, dataCell)
+            {
+                if(response.data.already_hit_cell) {
+                    this.wrongInput = 'This cell has already been hit.'
+                }
+
+                this.$parent.$data.gridData[dataCell.row][dataCell.col]['is_hit'] = true;
+
+                if(response.data.empty_cell) {
+                    this.$parent.$data.gridData[dataCell.row][dataCell.col]['is_empty'] = true;
+                } else {
+                    this.$parent.$data.gridData[dataCell.row][dataCell.col]['is_empty'] = false;
+                }
+
+                if(response.data.shot_count) {
+                    this.shotsCount = response.data.shot_count;
+                    this.success = true;
+                    this.disableSubmit = true;
+                }
+            }
         }
     }
 </script>
