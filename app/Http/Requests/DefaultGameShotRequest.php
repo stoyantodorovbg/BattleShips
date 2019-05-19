@@ -23,9 +23,12 @@ class DefaultGameShotRequest extends FormRequest
      */
     public function rules()
     {
+        $gridRowsCount = count($this->session()->get('battle_ships_grid'));
+        $gridColsCount = count($this->session()->get('battle_ships_grid')[1]);
+
         return [
-            'row' => 'required|integer',
-            'col' => 'required|integer',
+            'row' => 'required|integer|min:1|max:' . $gridRowsCount,
+            'col' => 'required|integer|min:1|max:' . $gridColsCount,
         ];
     }
 }

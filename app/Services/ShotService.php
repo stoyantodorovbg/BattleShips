@@ -72,20 +72,6 @@ class ShotService implements ShotServiceInterface
     }
 
     /**
-     * Reset the shot count
-     *
-     * @param string $gameName
-     */
-    public function resetShotCount(string $gameName = 'battle_ships'): void
-    {
-        $shotSessionKey = $this->getShotsKey($gameName);
-
-        if(session()->has($shotSessionKey)) {
-            session([$shotSessionKey => 0]);
-        }
-    }
-
-    /**
      * Set an initial shot count
      *
      * @param string $gameName

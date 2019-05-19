@@ -35,4 +35,21 @@ class GameTest extends TestCase
         $response->assertSessionMissing('battle_ships_grid');
         $response->assertSessionMissing('battle_ships_shots');
     }
+
+    /** @test */
+    public function every_time_when_the_game_starts_the_shot_count_is_zero()
+    {
+        $this->get('default-game');
+
+        $this->assertEquals(0, session()->get('battle_ships_shots'));
+
+        $this->post(route('default-game.shot'), [
+            'row' => rand(1, 10),
+            'col' => rand(1, 10),
+        ]);
+
+        $this->get('default-game');
+
+        $this->assertEquals(0, session()->get('battle_ships_shots'));
+    }
 }

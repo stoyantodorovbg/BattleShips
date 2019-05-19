@@ -39,7 +39,6 @@ class GameService implements GameServiceInterface
 
         $gridService = resolve(GridServiceInterface::class);
         $gridSessionKey = $gridService->getGridKey($gameName);
-        $shotService->resetShotCount($gameName);
 
         $shotCount = session($shotSessionKey);
 

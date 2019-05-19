@@ -74,7 +74,7 @@ class GameController extends Controller
             $response['empty_cell'] = true;
         }
 
-        if (!$shipService->checkForSailingShips($grid)) {
+        if (! $shipService->checkForSailingShips($grid)) {
             $shotCount = $gameService->finishGame();
 
             $response['shot_count'] = $shotCount;
