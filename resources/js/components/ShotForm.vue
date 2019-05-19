@@ -1,26 +1,16 @@
 <template>
     <div class="container shot-form">
         <div class="row mt-5">
-            <div class="col-6 input-group mb-3">
+            <div class="col-12 input-group mb-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text">ROW</span>
                 </div>
                 <input type="text"
-                       v-model="rowData"
-                       maxlength="1"
-                       class="form-control"
-                       placeholder="Enter a Character"
-                >
-            </div>
-            <div class="col-6 input-group mb-3">
-
-                <input type="number"
-                       v-model="colData"
-                       maxlength="1"
-                       min="1"
-                       :max="getColsCount()"
-                       class="form-control"
-                       placeholder="Enter a Number"
+                       v-model="coordData"
+                       :disabled="gameFinish ? true : false"
+                       maxlength="3"
+                       class="form-control text-center"
+                       placeholder="Enter cell coordinates"
                 >
                 <div class="input-group-prepend">
                     <span class="input-group-text">COL</span>
@@ -57,9 +47,11 @@
 
         data() {
             return {
+                coordData: '',
                 rowData: '',
                 colData: '',
-                disableSubmit: false,
+                gameFinish: false,
+                disableSubmit: this.gameFinish,
                 wrongInput: '',
                 rowsCount: this.getRowsCount(),
                 colsCount: this.getColsCount(),
@@ -69,24 +61,31 @@
         },
 
         watch: {
-            rowData: function (value) {
+            coordData: function (value) {
                 this.disableSubmit = false;
                 this.wrongInput = '';
 
-                if(! this.checkRowData(value)) {
+                this.rowData = value[0];
+                if(value.hasOwnProperty(1)) {
+                    this.colData = value[1];
+                } else {
+                    this.wrongInput = 'Please enter a col!';
+                }
+
+                if(value.hasOwnProperty(2)) {
+                    this.colData += value[2];
+                }
+
+                if(! this.checkRowData(this.rowData)) {
+                    this.disableSubmit = true;
+                    this.wrongInput = 'wrong input!';
+                }
+
+                if(! this.checkColData(this.colData)) {
                     this.disableSubmit = true;
                     this.wrongInput = 'wrong input!';
                 }
             },
-            colData: function (value) {
-                this.disableSubmit = false;
-                this.wrongInput = '';
-
-                if(! this.checkColData(value)) {
-                    this.disableSubmit = true;
-                    this.wrongInput = 'wrong input!';
-                }
-            }
         },
 
         methods: {
@@ -98,13 +97,17 @@
 
                     axios.post('/shot', dataCell)
                         .then(response => {
-                            component.processResponseData(response, dataCell);
+                            if(response.data.already_hit_cell) {
+                                component.wrongInput = 'This cell has already been hit.'
+                            } else {
+                                component.updateGridData(response, dataCell);
+                            }
                         }).catch(function () {
                         console.log('Something went wrong.');
                     });
                 } else {
                     this.disableSubmit = true;
-                    this.wrongInput = true;
+                    this.wrongInput = 'wrong input!';
                 }
             },
 
@@ -150,12 +153,8 @@
                 return false;
             },
 
-            processResponseData(response, dataCell)
+            updateGridData(response, dataCell)
             {
-                if(response.data.already_hit_cell) {
-                    this.wrongInput = 'This cell has already been hit.'
-                }
-
                 this.$parent.$data.gridData[dataCell.row][dataCell.col]['is_hit'] = true;
 
                 if(response.data.empty_cell) {
@@ -165,9 +164,9 @@
                 }
 
                 if(response.data.shot_count) {
+                    this.gameFinish = true,
                     this.shotsCount = response.data.shot_count;
                     this.success = true;
-                    this.disableSubmit = true;
                 }
             }
         }
