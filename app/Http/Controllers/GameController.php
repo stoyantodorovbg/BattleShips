@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ShotRequest;
+use App\Http\Requests\DefaultGameShotRequest;
 use App\Services\Interfaces\GameServiceInterface;
 use App\Services\Interfaces\GridServiceInterface;
 use App\Services\Interfaces\ShipServiceInterface;
@@ -29,13 +29,13 @@ class GameController extends Controller
     /**
      * Shot to a grid cell
      *
-     * @param ShotRequest $request
+     * @param DefaultGameShotRequest $request
      * @param ShotServiceInterface $shotService
      * @param ShipServiceInterface $shipService
      * @param GameServiceInterface $gameService
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function shot(ShotRequest $request, ShotServiceInterface $shotService, ShipServiceInterface $shipService, GameServiceInterface $gameService)
+    public function shot(DefaultGameShotRequest $request, ShotServiceInterface $shotService, ShipServiceInterface $shipService, GameServiceInterface $gameService)
     {
         $response = [
             'grid' => $shotService->shootCell($request->validated()),

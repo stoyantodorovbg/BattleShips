@@ -25,7 +25,7 @@ class GameTest extends TestCase
 
         $gameService = resolve(GameServiceInterface::class);
 
-        $response = $this->post(route('shot'), [
+        $response = $this->post(route('default-game.shot'), [
             'row' => rand(1, 10),
             'col' => rand(1, 10),
         ]);

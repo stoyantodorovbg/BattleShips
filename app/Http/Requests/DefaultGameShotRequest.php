@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ShotRequest extends FormRequest
+class DefaultGameShotRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class ShotRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return session()->has('battle_ships_grid');
     }
 
     /**

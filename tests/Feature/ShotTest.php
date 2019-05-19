@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Services\Interfaces\ShipServiceInterface;
 use Tests\TestCase;
+use App\Services\Interfaces\ShipServiceInterface;
 use App\Services\Interfaces\GridServiceInterface;
 
 class ShotTest extends TestCase
@@ -15,7 +15,7 @@ class ShotTest extends TestCase
 
         $gridService->createGrid([4, 4, 5]);
 
-        $this->post(route('shot'), [
+        $this->post(route('default-game.shot'), [
             'row' => rand(1, 10),
             'col' => rand(1, 10),
         ])->assertStatus(200)
@@ -32,7 +32,7 @@ class ShotTest extends TestCase
         $shipService = resolve(ShipServiceInterface::class);
 
         while($shipService->checkForSailingShips(session('battle_ships_grid'))) {
-            $response = $this->post(route('shot'), [
+            $response = $this->post(route('default-game.shot'), [
                 'row' => rand(1, 10),
                 'col' => rand(1, 10),
             ]);
@@ -46,5 +46,19 @@ class ShotTest extends TestCase
                 break;
             }
         }
+    }
+
+    /** @test */
+    public function the_player_can_shoot_only_when_the_grid_exists()
+    {
+        $this->get(route('default-game'));
+
+        session()->forget('battle_ships_grid');
+
+        $this->post(route('default-game.shot'), [
+            'row' => rand(1, 10),
+            'col' => rand(1, 10),
+        ])->assertStatus(403)
+        ->assertForbidden();
     }
 }
