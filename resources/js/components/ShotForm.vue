@@ -51,7 +51,7 @@
                 rowData: '',
                 colData: '',
                 gameFinish: false,
-                disableSubmit: this.gameFinish,
+                disableSubmit: false,
                 wrongInput: '',
                 rowsCount: this.getRowsCount(),
                 colsCount: this.getColsCount(),
@@ -165,6 +165,7 @@
 
                 if(response.data.shot_count) {
                     this.gameFinish = true,
+                    this.disableSubmit = true,
                     this.shotsCount = response.data.shot_count;
                     this.success = true;
                 }
