@@ -11,4 +11,8 @@ interface ShotServiceInterface
     public function getShotsCount(string $gameName): int;
 
     public function getShotsKey(string $gameName): string;
+
+    public function resetShotCount(string $gameName = 'battle_ships'): void;
+
+    public function setShotCount(string $gameName = 'battle_ships'): void;
 }

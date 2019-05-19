@@ -17,12 +17,11 @@ class GameController extends Controller
      * @param GridServiceInterface $gridService
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function battleShips(GridServiceInterface $gridService)
+    public function battleShips(GameServiceInterface $gameService)
     {
-        $grid = $gridService->createGrid([5, 4, 4]);
+        $grid = $gameService->startGame([5, 4, 4]);
 
         $grid = collect($grid);
-
 
         return view('games.battle-ships', compact('grid'));
     }

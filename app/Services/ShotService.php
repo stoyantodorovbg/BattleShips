@@ -39,12 +39,6 @@ class ShotService implements ShotServiceInterface
     {
         $shotSessionKey = $this->getShotsKey($gameName);
 
-        if(! session()->has($shotSessionKey)) {
-            session([$shotSessionKey => 1]);
-
-            return 1;
-        }
-
         $shotsCount = session($shotSessionKey);
         $shotsCount++;
 
@@ -75,5 +69,31 @@ class ShotService implements ShotServiceInterface
     public function getShotsKey(string $gameName = 'battle_ships'): string
     {
         return $gameName . '_shots';
+    }
+
+    /**
+     * Reset the shot count
+     *
+     * @param string $gameName
+     */
+    public function resetShotCount(string $gameName = 'battle_ships'): void
+    {
+        $shotSessionKey = $this->getShotsKey($gameName);
+
+        if(session()->has($shotSessionKey)) {
+            session([$shotSessionKey => 0]);
+        }
+    }
+
+    /**
+     * Set an initial shot count
+     *
+     * @param string $gameName
+     */
+    public function setShotCount(string $gameName = 'battle_ships'): void
+    {
+        $shotSessionKey = $this->getShotsKey($gameName);
+
+        session([$shotSessionKey => 0]);
     }
 }

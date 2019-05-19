@@ -9,7 +9,25 @@ use App\Services\Interfaces\ShotServiceInterface;
 class GameService implements GameServiceInterface
 {
     /**
-     * Perform the logic for the game finishing
+     * Provide the logic for the game starting
+     *
+     * @param array $shipsData
+     * @param string $gameName
+     * @return array
+     */
+    public function startGame(array $shipsData, string $gameName = 'battle_ships'): array
+    {
+        $gridService = resolve(GridServiceInterface::class);
+
+        $shotService = resolve(ShotServiceInterface::class);
+
+        $shotService->setShotCount($gameName);
+
+        return $gridService->createGrid($shipsData);
+    }
+
+    /**
+     * Provide the logic for the game finishing
      *
      * @param string $gameName
      * @return int
@@ -21,6 +39,7 @@ class GameService implements GameServiceInterface
 
         $gridService = resolve(GridServiceInterface::class);
         $gridSessionKey = $gridService->getGridKey($gameName);
+        $shotService->resetShotCount($gameName);
 
         $shotCount = session($shotSessionKey);
 
